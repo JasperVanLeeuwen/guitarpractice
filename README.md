@@ -1,5 +1,7 @@
 # Guitar Chord Practice
 
+> This project is completely vibe-coded.
+
 A progressive web app for practicing guitar chord changes. Select a progression and key, set a tempo, and a new chord is shown at the start of each measure.
 
 ## Usage
@@ -22,6 +24,7 @@ icon.svg        — app icon
 ### Playback
 - **BPM control** — slider and numeric input, range 40–200; adjustable while running
 - **Time signature** — 4/4 or 3/4
+- **Measures per chord** — 1, 2, or 4 measures per chord change (default 2)
 - **Beat indicator** — one dot per beat; current beat highlighted, downbeat flashes white
 - **Metronome click** — optional audio click (toggle with the **Click** button); downbeat accented at 1000 Hz, other beats at 750 Hz; scheduled via AudioContext for sample-accurate timing
 

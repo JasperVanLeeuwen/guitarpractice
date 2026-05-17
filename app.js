@@ -115,6 +115,7 @@ function buildProgression(typeId, keyIndex) {
 const state = {
   bpm: 80,
   beatsPerMeasure: 4,
+  measuresPerChord: 2,
   progressionTypeId: 'ii-V-I',
   keyIndex: 0,  // C
   isRunning: false,
@@ -132,6 +133,7 @@ let currentBeat = 0;
 // ── Progression State ─────────────────────────────────────────────────
 let currentProgression = null;
 let currentChordIndex  = -1;
+let measureCount       = 0;
 
 // ── DOM References ────────────────────────────────────────────────────
 const chordDisplay      = document.getElementById('chord-display');
@@ -184,7 +186,10 @@ function scheduler() {
 function onBeatVisual(beatNumber) {
   updateBeatDots(beatNumber);
   if (beatNumber === 0) {
-    transitionToNextChord();
+    if (measureCount % state.measuresPerChord === 0) {
+      transitionToNextChord();
+    }
+    measureCount++;
   }
 }
 
@@ -270,6 +275,7 @@ function selectProgression(typeId, keyIndex) {
     // Queue switch: takes effect on next downbeat
     currentProgression = buildProgression(typeId, keyIndex);
     currentChordIndex = -1;
+    measureCount = 0;
     buildProgressionDots();
     progressionLabel.textContent = `${currentProgression.name}  ·  ${currentProgression.key}`;
   }
@@ -289,6 +295,7 @@ function start() {
   currentBeat = 0;
   currentProgression = null;
   currentChordIndex = -1;
+  measureCount = 0;
   nextBeatTime = audioCtx.currentTime + 0.05;
 
   schedulerTimer = setInterval(scheduler, 25);
@@ -342,6 +349,15 @@ document.querySelectorAll('.time-btn').forEach(btn => {
     state.beatsPerMeasure = parseInt(btn.dataset.beats);
     currentBeat = 0;
     buildBeatDots();
+  });
+});
+
+document.querySelectorAll('.measures-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.measures-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.measuresPerChord = parseInt(btn.dataset.measures);
+    measureCount = 0;
   });
 });
 
