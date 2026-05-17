@@ -1,4 +1,4 @@
-'use strict';
+import { SplendidGrandPiano } from 'https://cdn.jsdelivr.net/npm/smplr/+esm';
 
 // ── Music Theory ──────────────────────────────────────────────────────
 const NOTES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -104,6 +104,15 @@ const PROGRESSION_TYPES = [
   },
 ];
 
+// Intervals (semitones above root) for each chord quality used in this app
+const CHORD_INTERVALS = {
+  '':     [0, 4, 7],
+  'm':    [0, 3, 7],
+  '7':    [0, 4, 7, 10],
+  'maj7': [0, 4, 7, 11],
+  'm7':   [0, 3, 7, 10],
+};
+
 function buildProgression(typeId, keyIndex) {
   const type = PROGRESSION_TYPES.find(t => t.id === typeId);
   const chords  = type.steps.map(step => NOTES[(keyIndex + step.semitones) % 12] + step.quality);
@@ -121,6 +130,7 @@ const state = {
   isRunning: false,
   metronomeEnabled: false,
   chordsHidden: false,
+  pianoEnabled: false,
 };
 
 // ── Timing State ──────────────────────────────────────────────────────
@@ -129,6 +139,10 @@ let audioCtx = null;
 let schedulerTimer = null;
 let nextBeatTime = 0;
 let currentBeat = 0;
+
+// ── Piano State ───────────────────────────────────────────────────────
+let piano = null;
+let pianoReady = false;
 
 // ── Progression State ─────────────────────────────────────────────────
 let currentProgression = null;
@@ -145,6 +159,7 @@ const bpmSlider         = document.getElementById('bpm-slider');
 const bpmInput          = document.getElementById('bpm-input');
 const startStopBtn      = document.getElementById('start-stop-btn');
 const clickToggleBtn    = document.getElementById('click-toggle-btn');
+const pianoToggleBtn    = document.getElementById('piano-toggle-btn');
 const chordsToggleBtn   = document.getElementById('chords-toggle-btn');
 const typeGrid          = document.getElementById('type-grid');
 const keyGrid           = document.getElementById('key-grid');
@@ -169,6 +184,27 @@ function scheduleClick(time, isDownbeat) {
   gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.04);
   osc.start(time);
   osc.stop(time + 0.04);
+}
+
+async function initPiano() {
+  if (piano) return;
+  piano = new SplendidGrandPiano(audioCtx);
+  pianoToggleBtn.textContent = 'Piano…';
+  await piano.load;
+  pianoReady = true;
+  pianoToggleBtn.textContent = 'Piano';
+}
+
+function playChord(chordName) {
+  if (!pianoReady || !state.pianoEnabled) return;
+  const match = chordName.match(/^([A-G][b#]?)(.*)$/);
+  if (!match) return;
+  const rootIndex = NOTES.indexOf(match[1]);
+  if (rootIndex === -1) return;
+  const intervals = CHORD_INTERVALS[match[2]] ?? CHORD_INTERVALS[''];
+  const rootMidi = 48 + rootIndex; // C3 = 48
+  const duration = state.measuresPerChord * state.beatsPerMeasure * getSecondsPerBeat();
+  intervals.forEach(st => piano.start({ note: rootMidi + st, velocity: 80, duration }));
 }
 
 function scheduler() {
@@ -221,6 +257,7 @@ function advanceChord() {
 // ── Chord Transition ──────────────────────────────────────────────────
 function transitionToNextChord() {
   const nextChord = advanceChord();
+  playChord(nextChord);
 
   chordDisplay.classList.remove('exiting', 'entering');
   void chordDisplay.offsetWidth;
@@ -291,6 +328,7 @@ function selectRandom() {
 function start() {
   if (!audioCtx) audioCtx = new AudioCtx();
   if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (state.pianoEnabled) initPiano();
 
   currentBeat = 0;
   currentProgression = null;
@@ -401,6 +439,17 @@ clickToggleBtn.addEventListener('click', () => {
   state.metronomeEnabled = !state.metronomeEnabled;
   clickToggleBtn.classList.toggle('active', state.metronomeEnabled);
   clickToggleBtn.setAttribute('aria-pressed', state.metronomeEnabled);
+});
+
+pianoToggleBtn.addEventListener('click', () => {
+  state.pianoEnabled = !state.pianoEnabled;
+  pianoToggleBtn.classList.toggle('active', state.pianoEnabled);
+  pianoToggleBtn.setAttribute('aria-pressed', state.pianoEnabled);
+  if (state.pianoEnabled) {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    initPiano();
+  }
 });
 
 chordsToggleBtn.addEventListener('click', () => {
