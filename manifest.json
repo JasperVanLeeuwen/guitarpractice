@@ -1,0 +1,12 @@
+{
+  "name": "Chord Practice",
+  "short_name": "Chords",
+  "description": "Guitar chord progression practice tool",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0d0d0f",
+  "theme_color": "#7c6af7",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

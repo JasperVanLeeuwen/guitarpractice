@@ -1,0 +1,462 @@
+/* ── Custom Properties ────────────────────────────────────────────── */
+:root {
+  --bg-primary:    #0d0d0f;
+  --bg-surface:    #1a1a1f;
+  --bg-elevated:   #25252d;
+  --accent:        #7c6af7;
+  --accent-dim:    #7c6af744;
+  --accent-glow:   #7c6af733;
+  --text-primary:  #f0f0f5;
+  --text-muted:    #6b6b80;
+  --beat-inactive: #2a2a35;
+  --beat-active:   #7c6af7;
+  --danger:        #ff5c5c;
+  --border:        rgba(255,255,255,0.06);
+  --safe-bottom:   env(safe-area-inset-bottom, 0px);
+  --safe-top:      env(safe-area-inset-top, 0px);
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100%; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100dvh;      /* dynamic viewport height — handles mobile browser chrome */
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  padding-top: var(--safe-top);
+}
+
+/* ── Header / Controls Bar ────────────────────────────────────────── */
+#controls-bar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex: 1;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-group label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* BPM Range Slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-dim);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 14px var(--accent);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+}
+
+/* BPM Number Input */
+input[type="number"] {
+  width: 54px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 8px;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type="number"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* Time Signature Buttons */
+.time-btn-group {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.time-btn {
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  min-height: 36px;
+}
+.time-btn + .time-btn {
+  border-left: 1px solid var(--border);
+}
+.time-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.time-btn:not(.active):hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Notes / Click Toggle Buttons — shared style */
+#chords-toggle-btn,
+#click-toggle-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  min-height: 36px;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+#chords-toggle-btn:hover,
+#click-toggle-btn:hover {
+  color: var(--text-primary);
+}
+#chords-toggle-btn.active,
+#click-toggle-btn.active {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-dim);
+}
+
+/* Start / Stop Button */
+#start-stop-btn {
+  padding: 8px 22px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  box-shadow: 0 0 16px var(--accent-dim);
+  min-height: 38px;
+  white-space: nowrap;
+}
+#start-stop-btn:hover {
+  box-shadow: 0 0 24px var(--accent-dim);
+}
+#start-stop-btn:active {
+  transform: scale(0.96);
+}
+#start-stop-btn.running {
+  background: var(--danger);
+  box-shadow: 0 0 16px rgba(255,92,92,0.3);
+}
+
+/* On wider screens: single-row header */
+@media (min-width: 600px) {
+  #controls-bar {
+    flex-wrap: nowrap;
+    height: 64px;
+    padding: 0 28px;
+    gap: 24px;
+  }
+  #start-stop-btn {
+    margin-left: auto;
+  }
+  input[type="range"] {
+    width: 110px;
+  }
+}
+
+/* ── Main Stage ───────────────────────────────────────────────────── */
+#stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  min-height: 0;
+}
+
+/* Beat Indicator Dots */
+#beat-indicator {
+  display: flex;
+  gap: 12px;
+  height: 20px;
+  align-items: center;
+}
+
+.beat-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--beat-inactive);
+  transition: background 0.06s, transform 0.06s, box-shadow 0.06s;
+}
+
+.beat-dot.active {
+  background: var(--beat-active);
+  box-shadow: 0 0 10px var(--beat-active);
+}
+
+.beat-dot.active.downbeat {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  box-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent-dim);
+}
+
+/* Chord Display */
+#chord-display {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1em;
+}
+
+#chord-name {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 20vw, 260px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  text-shadow: 0 0 80px var(--accent-glow), 0 0 160px var(--accent-glow);
+  user-select: none;
+}
+
+/* Roman numeral mode — accent colour signals "quiz mode" */
+#chord-name.roman {
+  color: var(--accent);
+  text-shadow: 0 0 80px var(--accent-dim), 0 0 160px var(--accent-glow);
+}
+
+/* Chord Transition Animations */
+#chord-display.exiting #chord-name {
+  animation: chordExit 0.22s ease-in forwards;
+}
+#chord-display.entering #chord-name {
+  animation: chordEnter 0.22s ease-out forwards;
+}
+
+@keyframes chordExit {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-24px) scale(0.96); }
+}
+@keyframes chordEnter {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Progression Info (below chord name) ──────────────────────────── */
+#progression-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+}
+
+#progression-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+#progression-dots {
+  display: flex;
+  gap: 7px;
+}
+
+.prog-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--beat-inactive);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.prog-dot.active {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+/* ── Chord Selector ───────────────────────────────────────────────── */
+#chord-selector {
+  flex: 0 0 auto;
+  padding: 12px 16px calc(12px + var(--safe-bottom));
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  overflow-y: auto;
+  max-height: 42vh;
+}
+
+@media (min-width: 600px) {
+  #chord-selector {
+    padding: 14px 28px 18px;
+    max-height: none;
+  }
+}
+
+.selector-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.selector-header h2 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Selector Rows */
+.selector-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.selector-row:last-child { margin-bottom: 0; }
+
+.selector-row-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  width: 28px;
+  flex-shrink: 0;
+  padding-top: 7px;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Shared button style */
+.sel-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  user-select: none;
+  min-height: 34px;
+  touch-action: manipulation;
+}
+.sel-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(124,106,247,0.3);
+}
+.sel-btn.active-selection {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 10px var(--accent-dim);
+}
+
+/* Key buttons — uniform width */
+.key-btn {
+  padding: 6px 0;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Random button */
+#random-btn {
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  min-height: 30px;
+  touch-action: manipulation;
+}
+#random-btn:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}

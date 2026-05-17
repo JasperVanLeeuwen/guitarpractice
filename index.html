@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chord Practice</title>
+  <meta name="theme-color" content="#7c6af7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chords">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header id="controls-bar">
+    <div class="app-title">Chord Practice</div>
+
+    <div class="control-group">
+      <label for="bpm-slider">BPM</label>
+      <input type="range" id="bpm-slider" min="40" max="200" value="80">
+      <input type="number" id="bpm-input" min="40" max="200" value="80">
+    </div>
+
+    <div class="control-group">
+      <label>Time</label>
+      <div class="time-btn-group">
+        <button class="time-btn active" data-beats="4">4/4</button>
+        <button class="time-btn" data-beats="3">3/4</button>
+      </div>
+    </div>
+
+    <button id="chords-toggle-btn" aria-pressed="false">Notes</button>
+    <button id="click-toggle-btn" aria-pressed="false">Click</button>
+    <button id="start-stop-btn">Start</button>
+  </header>
+
+  <main id="stage">
+    <div id="beat-indicator"></div>
+
+    <div id="chord-display">
+      <span id="chord-name">–</span>
+    </div>
+
+    <div id="progression-info">
+      <div id="progression-label"></div>
+      <div id="progression-dots"></div>
+    </div>
+  </main>
+
+  <section id="chord-selector">
+    <div class="selector-header">
+      <h2>Progression</h2>
+      <button id="random-btn">Random</button>
+    </div>
+    <div class="selector-row">
+      <span class="selector-row-label">Type</span>
+      <div id="type-grid" class="btn-group"></div>
+    </div>
+    <div class="selector-row">
+      <span class="selector-row-label">Key</span>
+      <div id="key-grid" class="btn-group"></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
