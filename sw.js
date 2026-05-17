@@ -1,4 +1,4 @@
-const CACHE = 'chord-practice-v1';
+const CACHE = 'chord-practice-v2';
 const ASSETS = [
   './',
   './index.html',
