@@ -158,9 +158,10 @@ input[type="number"]:focus {
   color: var(--text-primary);
 }
 
-/* Notes / Click Toggle Buttons — shared style */
+/* Notes / Click / Piano Toggle Buttons — shared style */
 #chords-toggle-btn,
-#click-toggle-btn {
+#click-toggle-btn,
+#piano-toggle-btn {
   padding: 6px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -176,11 +177,13 @@ input[type="number"]:focus {
   touch-action: manipulation;
 }
 #chords-toggle-btn:hover,
-#click-toggle-btn:hover {
+#click-toggle-btn:hover,
+#piano-toggle-btn:hover {
   color: var(--text-primary);
 }
 #chords-toggle-btn.active,
-#click-toggle-btn.active {
+#click-toggle-btn.active,
+#piano-toggle-btn.active {
   background: var(--bg-elevated);
   border-color: var(--accent);
   color: var(--accent);
