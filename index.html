@@ -1,83 +1,809 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Chord Practice</title>
-  <meta name="theme-color" content="#7c6af7">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Chords">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Chord Changes</title>
+<meta name="theme-color" content="#f0e6cc">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Changes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Caveat:wght@500;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  /* ────────────────────────────────────────────────────────────
+     Real Book — jazz practice journal
+     palette: cream paper, brown ink, sepia, oxblood stamp red
+     ──────────────────────────────────────────────────────────── */
+  :root{
+    --paper:        #f0e6cc;
+    --paper-shade:  #e3d4ad;
+    --paper-fold:   #c9b687;
+    --ink:          #2a1d10;
+    --ink-soft:     #4d3820;
+    --ink-faded:    #7a6342;
+    --sepia:        #a07c4a;
+    --stamp:        #9a3520;
+    --stamp-dark:   #6e2210;
+    --tea:          #b89466;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden}
+  body{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--ink);
+    background:#3a2c1a;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+    user-select:none;
+  }
+
+  .desk{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:14px;
+    background:
+      radial-gradient(ellipse at 50% 0%, #4a3825 0%, #2a1d10 80%);
+    gap:0;
+  }
+
+  /* the journal page itself */
+  .page{
+    flex:1;
+    background:var(--paper);
+    background-image:
+      /* foxing/age spots */
+      radial-gradient(ellipse 80px 40px at 12% 18%, rgba(160,124,74,.18), transparent 70%),
+      radial-gradient(ellipse 60px 30px at 88% 75%, rgba(160,124,74,.16), transparent 70%),
+      radial-gradient(ellipse 40px 30px at 30% 92%, rgba(160,124,74,.14), transparent 70%),
+      radial-gradient(ellipse 50px 30px at 70% 8%, rgba(160,124,74,.12), transparent 70%),
+      /* paper grain */
+      repeating-linear-gradient(0deg, rgba(74,42,12,.018) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(74,42,12,.012) 0 1px, transparent 1px 3px);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,.5),
+      inset 0 0 80px rgba(120,82,30,.12);
+    position:relative;
+    padding:34px 44px 26px;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    gap:18px;
+    overflow:hidden;
+  }
+  /* deckle edge shadows */
+  .page::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    box-shadow:
+      inset 18px 0 30px -20px rgba(80,52,20,.5),
+      inset -18px 0 30px -20px rgba(80,52,20,.5),
+      inset 0 18px 30px -20px rgba(80,52,20,.4),
+      inset 0 -18px 30px -20px rgba(80,52,20,.5);
+  }
+  /* corner: rough torn flap */
+  .page::after{
+    content:'';position:absolute;bottom:0;right:0;width:90px;height:90px;
+    background:linear-gradient(135deg, transparent 50%, var(--paper-fold) 50%, var(--paper-shade) 70%, var(--paper-fold) 100%);
+    box-shadow:-2px -2px 4px rgba(0,0,0,.18);
+    pointer-events:none;
+  }
+
+  /* ── Masthead ──────────────────────────────── */
+  .masthead{
+    display:grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items:end;
+    padding-bottom:10px;
+    border-bottom:1.5px solid var(--ink-soft);
+    position:relative;
+  }
+  .masthead::after{
+    content:'';position:absolute;bottom:-5px;left:0;right:0;height:1px;background:var(--ink-soft);
+  }
+  .masthead .left{font-family:'Special Elite',monospace;font-size:10px;letter-spacing:.22em;color:var(--ink-soft)}
+  .masthead .title{
+    text-align:center;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:18px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink);
+  }
+  .masthead .title small{
+    display:block;
+    font-style:normal;font-weight:500;
+    font-family:'Special Elite',monospace;font-size:9px;letter-spacing:.32em;
+    color:var(--ink-faded);margin-top:2px;
+  }
+  .masthead .right{text-align:right;font-family:'Caveat',cursive;font-size:18px;color:var(--ink-soft)}
+
+  /* rubber stamp on the masthead */
+  .stamp{
+    position:absolute;top:-8px;right:18px;
+    transform:rotate(-7deg);
+    font-family:'Special Elite',monospace;
+    font-size:10px;letter-spacing:.22em;
+    color:var(--stamp);
+    padding:6px 12px;
+    border:2px solid var(--stamp);
+    border-radius:3px;
+    opacity:.7;
+    text-transform:uppercase;
+    line-height:1.1;
+    text-align:center;
+    box-shadow:inset 0 0 6px rgba(154,53,32,.2);
+  }
+
+  /* ── Main page body ──────────────────────── */
+  .body{
+    display:grid;
+    grid-template-columns: 1fr 200px;
+    gap:32px;
+    min-height:0;
+  }
+
+  /* big chord display centerpiece */
+  .display{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    position:relative;
+    padding:0 6px;
+  }
+
+  .meta-row{
+    display:flex;align-items:baseline;gap:14px;
+    font-family:'Special Elite',monospace;
+    font-size:10px;letter-spacing:.22em;color:var(--ink-faded);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .meta-row .sig{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;
+    font-size:14px;letter-spacing:0;
+    color:var(--ink);
+  }
+  .meta-row .key-tag{
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;
+    font-size:14px;letter-spacing:0;color:var(--ink);
+  }
+
+  .chord-name{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:clamp(140px, 19vw, 280px);
+    line-height:.9;
+    letter-spacing:-.02em;
+    color:var(--ink);
+    transition:opacity .22s, transform .22s;
+    position:relative;
+    text-shadow:0 1px 0 rgba(255,255,255,.3);
+  }
+  .chord-name.exiting{opacity:0;transform:translateY(-12px)}
+  .chord-name.entering{opacity:1;transform:translateY(0)}
+  .chord-name.roman{font-style:italic;color:var(--stamp);font-size:clamp(110px,15vw,220px)}
+
+  /* the staff snippet under the chord */
+  .progression-staff{
+    display:flex;align-items:center;gap:0;
+    margin-top:14px;
+    border-top:1px solid var(--ink-faded);
+    border-bottom:1px solid var(--ink-faded);
+    padding:14px 0;
+    width:100%;
+    position:relative;
+  }
+  .progression-staff::before{
+    content:'';position:absolute;top:5px;left:0;right:0;border-top:.5px solid var(--ink-faded);
+  }
+  .progression-staff::after{
+    content:'';position:absolute;bottom:5px;left:0;right:0;border-bottom:.5px solid var(--ink-faded);
+  }
+  .staff-bar{
+    flex:1;
+    border-right:1.5px solid var(--ink-soft);
+    padding:0 16px;
+    display:flex;align-items:center;gap:10px;
+    min-height:48px;
+    position:relative;
+  }
+  .staff-bar:last-child{border-right:none}
+  .staff-bar .num{
+    font-family:'Special Elite',monospace;
+    font-size:9px;letter-spacing:.18em;color:var(--ink-faded);
+    position:absolute;top:-13px;left:8px;
+  }
+  .staff-bar .chord{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--ink);
+    line-height:1;
+  }
+  .staff-bar .degree{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:14px;
+    color:var(--ink-faded);
+    margin-left:auto;
+  }
+  .staff-bar.current{
+    background:rgba(160,124,74,.16);
+    border-radius:2px;
+  }
+  .staff-bar.current .chord{color:var(--stamp)}
+
+  /* beat indicator under staff: ink dots */
+  .beat-ink{
+    display:flex;gap:14px;
+    margin-top:12px;
+    align-items:center;
+    font-family:'Special Elite',monospace;
+    font-size:10px;letter-spacing:.22em;color:var(--ink-faded);
+  }
+  .beat-ink .dots{display:flex;gap:8px}
+  .ink-dot{
+    width:11px;height:11px;border-radius:50%;
+    background:transparent;
+    border:1.5px solid var(--ink-soft);
+    transition:background .06s, transform .06s;
+  }
+  .ink-dot.on{background:var(--ink);transform:scale(1.1)}
+  .ink-dot.downbeat{background:var(--stamp);border-color:var(--stamp);transform:scale(1.25)}
+
+  /* ── Right sidebar (margin notes) ─────────── */
+  .margin{
+    border-left:1px dashed var(--ink-faded);
+    padding-left:22px;
+    display:flex;flex-direction:column;gap:18px;
+    font-family:'Special Elite',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    position:relative;
+  }
+  .margin h3{
+    font-family:'Caveat',cursive;
+    font-size:22px;font-weight:700;color:var(--ink);
+    letter-spacing:0;
+    margin-bottom:-2px;
+    line-height:1;
+  }
+
+  /* hand-sketched tempo dial */
+  .tempo-card{
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .tempo-dial{
+    width:130px;height:130px;position:relative;align-self:center;
+  }
+  .tempo-dial svg{width:100%;height:100%}
+  .tempo-marker{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  }
+  .tempo-marker .reading{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:700;
+    font-size:42px;line-height:1;color:var(--ink);
+  }
+  .tempo-marker small{
+    display:block;text-align:center;
+    font-family:'Special Elite',monospace;font-size:8px;letter-spacing:.28em;
+    color:var(--ink-faded);margin-top:2px;
+  }
+  .tempo-bpm-input{
+    background:transparent;border:0;border-bottom:1px solid var(--ink-faded);
+    color:var(--ink);font-family:inherit;font-size:11px;text-align:center;
+    width:80px;align-self:center;padding:4px 0;outline:none;
+    letter-spacing:.18em;
+  }
+  .tempo-bpm-input:focus{border-bottom-color:var(--ink)}
+
+  /* toggle row */
+  .toggle-stack{display:flex;flex-direction:column;gap:8px}
+  .toggle-line{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+  }
+  .toggle-line .name{
+    font-family:'Caveat',cursive;font-size:17px;color:var(--ink);font-weight:700;line-height:1;
+  }
+  .toggle-line .opts{display:flex;gap:4px}
+  .toggle-line .opts button{
+    background:transparent;border:1.5px solid var(--ink-soft);
+    font-family:'Special Elite',monospace;
+    color:var(--ink-soft);
+    font-size:10px;letter-spacing:.12em;
+    padding:3px 7px;border-radius:2px;cursor:pointer;min-height:24px;
+    transition:all .15s;
+  }
+  .toggle-line .opts button.on{
+    background:var(--ink);color:var(--paper);border-color:var(--ink);
+  }
+  .toggle-line .opts button:hover:not(.on){border-color:var(--ink);color:var(--ink)}
+
+  /* big stamp PLAY button */
+  .play-stamp{
+    margin-top:auto;
+    font-family:'Special Elite',monospace;
+    font-size:18px;letter-spacing:.32em;
+    color:var(--stamp);
+    background:transparent;
+    border:3.5px double var(--stamp);
+    border-radius:4px;
+    padding:14px 12px;
+    cursor:pointer;
+    text-align:center;
+    transition:all .15s;
+    transform:rotate(-1.5deg);
+    box-shadow:inset 0 0 12px rgba(154,53,32,.1);
+  }
+  .play-stamp:hover{
+    background:rgba(154,53,32,.08);
+    transform:rotate(-1.5deg) scale(1.02);
+  }
+  .play-stamp.running{
+    background:var(--stamp);color:var(--paper);
+    transform:rotate(.5deg);
+    border-color:var(--stamp-dark);
+    box-shadow:inset 0 0 12px rgba(0,0,0,.2);
+  }
+
+  /* ── Footer / Progression chooser ─────────── */
+  .footer{
+    border-top:1.5px solid var(--ink-soft);
+    padding-top:14px;
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:14px;
+    align-items:start;
+  }
+  .footer::before{
+    content:'';display:block;
+    height:1px;background:var(--ink-soft);
+    grid-column:1/-1;margin-top:-15px;margin-bottom:4px;
+  }
+  .chooser{display:flex;flex-direction:column;gap:8px}
+  .chooser .label{
+    font-family:'Special Elite',monospace;font-size:10px;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faded);
+  }
+  .chooser .row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .chooser .row .name{
+    font-family:'Caveat',cursive;font-size:18px;color:var(--ink);font-weight:700;
+    margin-right:6px;line-height:1;width:40px;
+  }
+  .ink-chip{
+    background:transparent;border:1.5px solid var(--ink-soft);
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    color:var(--ink);
+    font-size:14px;
+    padding:4px 9px;border-radius:2px;cursor:pointer;
+    min-height:28px;
+    transition:all .12s;
+    line-height:1;
+  }
+  .ink-chip:hover{border-color:var(--ink);background:rgba(42,29,16,.05)}
+  .ink-chip.on{
+    background:var(--ink);color:var(--paper);border-color:var(--ink);
+  }
+  .ink-chip.key{font-style:italic;min-width:36px;text-align:center}
+
+  .roll-btn{
+    background:transparent;
+    border:2px solid var(--stamp);
+    color:var(--stamp);
+    font-family:'Special Elite',monospace;
+    font-size:10px;letter-spacing:.18em;
+    padding:6px 10px;border-radius:2px;cursor:pointer;
+    align-self:end;
+    transition:all .15s;
+  }
+  .roll-btn:hover{background:var(--stamp);color:var(--paper)}
+
+  /* margin doodles */
+  .doodle{
+    position:absolute;font-family:'Caveat',cursive;
+    color:var(--ink-faded);font-size:13px;
+    pointer-events:none;
+    line-height:1.2;
+  }
+  .doodle.d1{top:38%;right:42px;transform:rotate(-3deg);font-size:14px}
+  .doodle.d2{bottom:90px;left:38px;transform:rotate(2deg);font-size:13px}
+
+  /* ── Tablet (~900px) ──────────────────────── */
+  @media (max-width: 960px){
+    .desk{padding:10px}
+    .page{padding:24px 28px 20px;gap:14px}
+    .body{grid-template-columns:1fr 180px;gap:22px}
+    .chord-name{font-size:clamp(108px, 18vw, 200px)}
+    .doodle{display:none}
+  }
+
+  /* ── Phone (single column) ────────────────── */
+  @media (max-width: 720px){
+    html,body{overflow:auto}
+    body{height:auto;min-height:100dvh}
+    .desk{flex:none;min-height:100dvh;padding:8px;padding-bottom:max(8px, env(safe-area-inset-bottom))}
+    .page{flex:none;padding:20px 18px 18px;gap:16px}
+    .page::before, .page::after{display:none}
+    .masthead{grid-template-columns:1fr;gap:4px;text-align:center;padding-bottom:8px}
+    .masthead .left, .masthead .right{text-align:center}
+    .masthead .right{font-size:14px}
+    .stamp{position:relative;top:auto;right:auto;display:inline-block;align-self:center;margin-top:6px;transform:rotate(-5deg)}
+    .body{grid-template-columns:1fr;gap:18px}
+    .chord-name{font-size:clamp(96px, 30vw, 180px);text-align:center;align-self:center}
+    .meta-row{justify-content:center;flex-wrap:wrap}
+    .display{align-items:center}
+    .progression-staff{width:100%}
+    .staff-bar{padding:0 10px;min-height:42px}
+    .staff-bar .chord{font-size:18px}
+    .staff-bar .degree{font-size:12px}
+    .beat-ink{width:100%;justify-content:center;gap:10px}
+    .margin{
+      border-left:0;border-top:1px dashed var(--ink-faded);
+      padding-left:0;padding-top:18px;
+      display:grid;grid-template-columns:auto 1fr;gap:14px 22px;align-items:start;
+    }
+    .tempo-card{grid-row:span 2}
+    .tempo-dial{width:110px;height:110px}
+    .tempo-marker .reading{font-size:34px}
+    .toggle-stack{gap:6px}
+    .play-stamp{
+      grid-column:1 / -1;
+      margin-top:6px;
+      padding:14px;
+      font-size:16px;
+      transform:rotate(-1deg);
+    }
+    .play-stamp.running{transform:rotate(.5deg)}
+    .footer{grid-template-columns:1fr;gap:10px}
+    .chooser .row{align-items:flex-start}
+    .roll-btn{align-self:start;justify-self:start}
+  }
+
+  /* ── Small phones ─────────────────────────── */
+  @media (max-width: 420px){
+    .desk{padding:6px}
+    .page{padding:16px 14px 14px}
+    .masthead .title{font-size:15px;letter-spacing:.14em}
+    .chord-name{font-size:clamp(80px, 26vw, 140px)}
+    .ink-chip{font-size:13px;padding:4px 7px}
+    .ink-chip.key{min-width:30px}
+    .chooser .row .name{font-size:16px;width:36px}
+    .tempo-dial{width:96px;height:96px}
+    .tempo-marker .reading{font-size:28px}
+    .margin{grid-template-columns:1fr;gap:14px}
+    .tempo-card{grid-row:auto;align-items:center}
+    .tempo-card h3, .tempo-card .tempo-bpm-input{align-self:center}
+  }
+
+  /* hide hover affordances when the device can't hover */
+  @media (hover:none){
+    .ink-chip:hover, .toggle-line .opts button:hover, .roll-btn:hover, .play-stamp:hover{
+      background:transparent;color:inherit;border-color:var(--ink-soft);transform:none;
+    }
+    .play-stamp.running:hover{background:var(--stamp);color:var(--paper)}
+  }
+
+</style>
 </head>
 <body>
+  <div class="desk">
+    <div class="page">
+      <!-- masthead -->
+      <header class="masthead">
+        <div class="left">VOL · IV &nbsp;·&nbsp; LESSON XII</div>
+        <div class="title">The Practice Journal<small>JAZZ STUDIES · CHANGES &amp; CHANGES</small></div>
+        <div class="right">— in tempo ·</div>
+        <div class="stamp">CHORDS<br>PRACTICE</div>
+      </header>
 
-  <header id="controls-bar">
-    <div class="app-title">Chord Practice</div>
+      <!-- body: chord + margin -->
+      <div class="body">
+        <div class="display">
+          <div class="meta-row">
+            <span>EXERCISE №</span>
+            <span class="sig" id="rb-prog-name">ii–V–I</span>
+            <span>·</span>
+            <span class="key-tag" id="rb-key-name">in C</span>
+            <span id="rb-bar-counter">·</span>
+          </div>
 
-    <div class="control-group">
-      <label for="bpm-slider">BPM</label>
-      <input type="range" id="bpm-slider" min="40" max="200" value="80">
-      <input type="number" id="bpm-input" min="40" max="200" value="80">
-    </div>
+          <div class="chord-name" id="rb-chord">–</div>
 
-    <div class="control-group">
-      <label>Time</label>
-      <div class="time-btn-group">
-        <button class="time-btn active" data-beats="4">4/4</button>
-        <button class="time-btn" data-beats="3">3/4</button>
+          <div class="progression-staff" id="rb-staff">
+            <!-- bars will be inserted here -->
+          </div>
+
+          <div class="beat-ink">
+            <span>Pulse</span>
+            <div class="dots" id="rb-beats"></div>
+            <span style="margin-left:auto" id="rb-bpm-echo">♩ = 80</span>
+          </div>
+        </div>
+
+        <aside class="margin">
+          <div class="tempo-card">
+            <h3>Tempo</h3>
+            <div class="tempo-dial">
+              <svg viewBox="0 0 100 100">
+                <!-- outer arc -->
+                <path d="M 18 80 A 40 40 0 1 1 82 80" fill="none" stroke="#7a6342" stroke-width="1.2"/>
+                <!-- inner arc, hand-drawn feel via dasharray -->
+                <path d="M 22 76 A 36 36 0 1 1 78 76" fill="none" stroke="#7a6342" stroke-width=".8" stroke-dasharray="1,3"/>
+                <!-- tempo markings -->
+                <g id="rb-tempo-marks" font-family="Special Elite" font-size="6.5" fill="#4d3820"></g>
+                <!-- needle -->
+                <line id="rb-needle" x1="50" y1="50" x2="50" y2="14" stroke="#2a1d10" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="3.5" fill="#2a1d10"/>
+                <circle cx="50" cy="50" r="1.5" fill="#f0e6cc"/>
+              </svg>
+              <div class="tempo-marker">
+                <div>
+                  <div class="reading" id="rb-bpm">80</div>
+                  <small>BPM</small>
+                </div>
+              </div>
+            </div>
+            <input class="tempo-bpm-input" id="rb-bpm-input" type="number" min="40" max="200" value="80">
+          </div>
+
+          <div class="toggle-stack">
+            <div class="toggle-line">
+              <span class="name">Time</span>
+              <div class="opts" id="rb-time">
+                <button data-beats="4" class="on">4/4</button>
+                <button data-beats="3">3/4</button>
+              </div>
+            </div>
+            <div class="toggle-line">
+              <span class="name">Bars / chord</span>
+              <div class="opts" id="rb-measures">
+                <button data-measures="1">1</button>
+                <button data-measures="2" class="on">2</button>
+                <button data-measures="4">4</button>
+              </div>
+            </div>
+            <div class="toggle-line">
+              <span class="name">Click</span>
+              <div class="opts" id="rb-click">
+                <button data-on="0" class="on">off</button>
+                <button data-on="1">on</button>
+              </div>
+            </div>
+            <div class="toggle-line">
+              <span class="name">Piano</span>
+              <div class="opts" id="rb-piano">
+                <button data-on="0" class="on">off</button>
+                <button data-on="1">on</button>
+              </div>
+            </div>
+            <div class="toggle-line">
+              <span class="name">Show</span>
+              <div class="opts" id="rb-roman">
+                <button data-on="0" class="on">chord</button>
+                <button data-on="1">degree</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="play-stamp" id="rb-play">PLAY</button>
+        </aside>
       </div>
-    </div>
 
-    <div class="control-group">
-      <label>Measures</label>
-      <div class="time-btn-group">
-        <button class="time-btn measures-btn" data-measures="1">1</button>
-        <button class="time-btn measures-btn active" data-measures="2">2</button>
-        <button class="time-btn measures-btn" data-measures="4">4</button>
-      </div>
-    </div>
+      <!-- footer chooser -->
+      <footer class="footer">
+        <div class="chooser">
+          <div class="row" id="rb-type-row">
+            <span class="name">Form</span>
+          </div>
+          <div class="row" id="rb-key-row">
+            <span class="name">Key</span>
+          </div>
+        </div>
+        <button class="roll-btn" id="rb-random">↻ Roll the dice</button>
+      </footer>
 
-    <button id="chords-toggle-btn" aria-pressed="false">Notes</button>
-    <button id="click-toggle-btn" aria-pressed="false">Click</button>
-    <button id="piano-toggle-btn" aria-pressed="false">Piano</button>
-    <button id="start-stop-btn">Start</button>
-  </header>
-
-  <main id="stage">
-    <div id="beat-indicator"></div>
-
-    <div id="chord-display">
-      <span id="chord-name">–</span>
+      <!-- doodles -->
+      <div class="doodle d1">→ change on the 1</div>
+      <div class="doodle d2">slow it down ↓</div>
     </div>
+  </div>
 
-    <div id="progression-info">
-      <div id="progression-label"></div>
-      <div id="progression-dots"></div>
-    </div>
-  </main>
+<script type="module">
+  import { ChordEngine, PROGRESSION_TYPES, NOTES, buildProgression } from './engine.js';
 
-  <section id="chord-selector">
-    <div class="selector-header">
-      <h2>Progression</h2>
-      <button id="random-btn">Random</button>
-    </div>
-    <div class="selector-row">
-      <span class="selector-row-label">Type</span>
-      <div id="type-grid" class="btn-group"></div>
-    </div>
-    <div class="selector-row">
-      <span class="selector-row-label">Key</span>
-      <div id="key-grid" class="btn-group"></div>
-    </div>
-  </section>
+  const engine = new ChordEngine();
 
-  <script type="module" src="app.js"></script>
+  const chordEl    = document.getElementById('rb-chord');
+  const progName   = document.getElementById('rb-prog-name');
+  const keyName    = document.getElementById('rb-key-name');
+  const barCounter = document.getElementById('rb-bar-counter');
+  const staffEl    = document.getElementById('rb-staff');
+  const beatsEl    = document.getElementById('rb-beats');
+  const bpmEl      = document.getElementById('rb-bpm');
+  const bpmEcho    = document.getElementById('rb-bpm-echo');
+  const bpmInput   = document.getElementById('rb-bpm-input');
+  const needle     = document.getElementById('rb-needle');
+  const tempoMarks = document.getElementById('rb-tempo-marks');
+  const timeBar    = document.getElementById('rb-time');
+  const measuresBar= document.getElementById('rb-measures');
+  const clickBar   = document.getElementById('rb-click');
+  const pianoBar   = document.getElementById('rb-piano');
+  const romanBar   = document.getElementById('rb-roman');
+  const playBtn    = document.getElementById('rb-play');
+  const typeRow    = document.getElementById('rb-type-row');
+  const keyRow     = document.getElementById('rb-key-row');
+  const randomBtn  = document.getElementById('rb-random');
+
+  // tempo marks: 40, 60, 80, 100, 120, 140, 160, 180, 200
+  (function(){
+    const ticks = [40,60,80,100,120,140,160,180,200];
+    let g = '';
+    ticks.forEach(t=>{
+      const frac = (t-40)/(200-40);
+      const angle = -135 + frac*270;
+      const a = angle*Math.PI/180;
+      const x = 50 + Math.sin(a)*32;
+      const y = 50 - Math.cos(a)*32 + 2;
+      g += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle">${t}</text>`;
+    });
+    tempoMarks.innerHTML = g;
+  })();
+
+  function rotateNeedle(bpm){
+    const frac = (bpm-40)/(200-40);
+    const angle = -135 + frac*270;
+    needle.setAttribute('transform', `rotate(${angle} 50 50)`);
+    bpmEl.textContent = bpm;
+    bpmEcho.textContent = `♩ = ${bpm}`;
+    if (bpmInput.value != bpm) bpmInput.value = bpm;
+  }
+
+  function rebuildBeats(beats){
+    beatsEl.innerHTML='';
+    for (let i=0;i<beats;i++){
+      const d = document.createElement('div');
+      d.className='ink-dot';
+      beatsEl.appendChild(d);
+    }
+  }
+
+  function rebuildStaff(){
+    staffEl.innerHTML='';
+    const prog = buildProgression(engine.state.progressionTypeId, engine.state.keyIndex);
+    prog.chords.forEach((c,i)=>{
+      const bar = document.createElement('div');
+      bar.className='staff-bar';
+      bar.innerHTML = `<span class="num">${i+1}</span>
+                       <span class="chord">${c}</span>
+                       <span class="degree">${prog.degrees[i]}</span>`;
+      staffEl.appendChild(bar);
+    });
+    progName.textContent = prog.name;
+    keyName.textContent = `in ${prog.key}`;
+  }
+
+  function buildChooser(){
+    PROGRESSION_TYPES.forEach(t=>{
+      const b = document.createElement('button');
+      b.className='ink-chip';
+      b.textContent = t.name;
+      b.dataset.type=t.id;
+      if (t.id === engine.state.progressionTypeId) b.classList.add('on');
+      b.addEventListener('click', ()=> engine.selectProgression(t.id, engine.state.keyIndex));
+      typeRow.appendChild(b);
+    });
+    NOTES.forEach((n,i)=>{
+      const b = document.createElement('button');
+      b.className='ink-chip key';
+      b.textContent=n;
+      b.dataset.key=i;
+      if (i === engine.state.keyIndex) b.classList.add('on');
+      b.addEventListener('click', ()=> engine.selectProgression(engine.state.progressionTypeId, i));
+      keyRow.appendChild(b);
+    });
+  }
+
+  // ── controls ──
+  bpmInput.addEventListener('change', ()=> engine.setBpm(bpmInput.value));
+  bpmInput.addEventListener('input', ()=>{
+    const v = +bpmInput.value;
+    if (v>=40 && v<=200) engine.setBpm(v);
+  });
+
+  timeBar.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b) return;
+    timeBar.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    engine.setBeatsPerMeasure(+b.dataset.beats);
+  });
+  measuresBar.addEventListener('click', e=>{
+    const b = e.target.closest('button'); if (!b) return;
+    measuresBar.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    engine.setMeasuresPerChord(+b.dataset.measures);
+  });
+  function bindPair(bar, applyFn){
+    bar.addEventListener('click', e=>{
+      const b = e.target.closest('button'); if (!b) return;
+      bar.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      applyFn(+b.dataset.on === 1);
+    });
+  }
+  bindPair(clickBar, v => engine.setMetronomeEnabled(v));
+  bindPair(pianoBar, v => engine.setPianoEnabled(v));
+  bindPair(romanBar, v => engine.setChordsHidden(v));
+
+  playBtn.addEventListener('click', ()=> engine.toggle());
+  randomBtn.addEventListener('click', ()=> engine.selectRandom());
+
+  // ── engine events ──
+  engine.on('state', s=>{
+    rotateNeedle(s.bpm);
+    playBtn.classList.toggle('running', s.isRunning);
+    playBtn.textContent = s.isRunning ? 'STOP' : 'PLAY';
+    if (beatsEl.children.length !== s.beatsPerMeasure) rebuildBeats(s.beatsPerMeasure);
+    typeRow.querySelectorAll('.ink-chip').forEach(c => c.classList.toggle('on', c.dataset.type === s.progressionTypeId));
+    keyRow.querySelectorAll('.ink-chip').forEach(c => c.classList.toggle('on', +c.dataset.key === s.keyIndex));
+    rebuildStaff();
+    if (!s.isRunning){
+      chordEl.textContent='–';
+      chordEl.classList.remove('roman');
+      barCounter.textContent='·';
+      staffEl.querySelectorAll('.staff-bar').forEach(b=>b.classList.remove('current'));
+      beatsEl.querySelectorAll('.ink-dot').forEach(d=>d.classList.remove('on','downbeat'));
+    }
+  });
+
+  engine.on('beat', ({beat})=>{
+    beatsEl.querySelectorAll('.ink-dot').forEach((d,i)=>{
+      d.classList.toggle('on', i===beat);
+      d.classList.toggle('downbeat', i===beat && beat===0);
+    });
+  });
+
+  engine.on('chord', ({chord, roman, progression, index, transition})=>{
+    if (progression){
+      progName.textContent = progression.name;
+      keyName.textContent = `in ${progression.key}`;
+      staffEl.querySelectorAll('.staff-bar').forEach((b,i)=> b.classList.toggle('current', i===index));
+      if (index >= 0) barCounter.textContent = `bar ${index+1}/${progression.chords.length}`;
+    }
+    if (!chord) return;
+    if (transition){
+      chordEl.classList.add('exiting');
+      setTimeout(()=>{
+        chordEl.textContent = chord;
+        chordEl.classList.toggle('roman', roman);
+        chordEl.classList.remove('exiting');
+        chordEl.classList.add('entering');
+        setTimeout(()=>chordEl.classList.remove('entering'), 220);
+      }, 180);
+    } else {
+      chordEl.textContent = chord;
+      chordEl.classList.toggle('roman', roman);
+    }
+  });
+
+  // init
+  rebuildBeats(engine.state.beatsPerMeasure);
+  buildChooser();
+  rebuildStaff();
+  rotateNeedle(engine.state.bpm);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+</script>
 </body>
 </html>

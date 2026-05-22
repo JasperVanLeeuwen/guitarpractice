@@ -1,9 +1,8 @@
-const CACHE = 'chord-practice-v2';
+const CACHE = 'chord-practice-v3';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './engine.js',
   './manifest.json',
   './icon.svg',
 ];
